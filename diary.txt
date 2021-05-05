@@ -1,3 +1,25 @@
 2021/05/05
 普段数学書を読む時に、いかに自分が定義をてきとうに扱ってしまっているかを実感した。
 「変数」とか「文」とか、定義が書かれているのになんとなくで理解してしまっている。
+
+8ページ目、「証明可能である」を意味する |- をCoq上で定義するのに苦心している。
+参考として、このへんを見ている
+Derive Your Dreams http://www.kmonos.net/wlog/61.html#_1826060509
+https://github.com/coq-community/goedel
+https://github.com/coq-community/hydra-battles
+hydra-battlesでは証明可能であるを意味する Prf 型について、推論規則を元に定義している。
+しかし、FOLならこの定義でいいが、このケネス・キューネンの本では論理体系をメタに扱う関係上、推論規則を固定してPrfを定義してしまうのはマズそう。
+
+(* この定義で、sentence_intro (formula_and p1 q1)が型エラーになるのは分かる。 *)
+(* この足りないPropを埋めて証明モードに移行したい。どうやったらいい? *)
+Definition sentence_and (p q : sentence) : sentence :=
+  match p with
+    | sentence_intro p1 P => match q with
+                               | sentence_intro q1 Q => sentence_intro (formula_and p1 q1)
+                             end
+  end.
+
+→ Program Definitionして、sentence_intro (formula_and p1 q1) _ と書けばいけたわ。証明は大変だけど。
+
+sentenceについて、自由変数の集合が空集合になっているという条件を示すためには、Ensembleの公理 Extensionality_Ensembles を使うと証明が楽になる場面が多い。
+  https://coq.inria.fr/library/Coq.Sets.Ensembles.html
